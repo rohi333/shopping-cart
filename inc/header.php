@@ -1,87 +1,157 @@
+<?php include 'lib/Session.php';
+  Session::init();
+  include 'lib/Database.php';
+  include 'helpers/Format.php';
+   
+   spl_autoload_register(function($class){
+    include_once "classes/".$class.".php";
+   });
+ 
+   $db = new Database();
+   $fm = new Format();
+   $pd = new Product();
+   $cat = new Category();
+   $ct = new Cart();
+   $cmr = new Customer();
 
 
-
-<?php include '../lib/Session.php';
-  Session::checkSession();
-
-  header("Cache-Control: no-cache, must-revalidate");
-  header("Pragma: no-cache"); 
-  header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); 
-  header("Cache-Control: max-age=2592000");
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>Admin</title>
-    <link rel="stylesheet" type="text/css" href="css/reset.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="css/text.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="css/grid.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="css/layout.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="css/nav.css" media="screen" />
-    <link href="css/table/demo_page.css" rel="stylesheet" type="text/css" />
 
-    <!-- BEGIN: load jquery -->
-    <script src="js/jquery-1.6.4.min.js" type="text/javascript"></script>
-    <script type="text/javascript" src="js/jquery-ui/jquery.ui.core.min.js"></script>
-    <script src="js/jquery-ui/jquery.ui.widget.min.js" type="text/javascript"></script>
-    <script src="js/jquery-ui/jquery.ui.accordion.min.js" type="text/javascript"></script>
-    <script src="js/jquery-ui/jquery.effects.core.min.js" type="text/javascript"></script>
-    <script src="js/jquery-ui/jquery.effects.slide.min.js" type="text/javascript"></script>
-    <script src="js/jquery-ui/jquery.ui.mouse.min.js" type="text/javascript"></script>
-    <script src="js/jquery-ui/jquery.ui.sortable.min.js" type="text/javascript"></script>
-    <script src="js/table/jquery.dataTables.min.js" type="text/javascript"></script>
-    <!-- END: load jquery -->
-    <script type="text/javascript" src="js/table/table.js"></script>
-    <script src="js/setup.js" type="text/javascript"></script>
-	 <script type="text/javascript">
-        $(document).ready(function () {
-            setupLeftMenu();
-		    setSidebarHeight();
-        });
-    </script>
+<!--<?php
+  //header("Cache-Control: no-cache, must-revalidate");
+  //header("Pragma: no-cache"); 
+  //header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); 
+  //header("Cache-Control: max-age=2592000");
+?>-->
+
+<!DOCTYPE HTML>
+<head>
+<title>Shopping Cart Website</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
+<link href="css/menu.css" rel="stylesheet" type="text/css" media="all"/>
+<script src="js/jquerymain.js"></script>
+<script src="js/script.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script> 
+<script type="text/javascript" src="js/nav.js"></script>
+<script type="text/javascript" src="js/move-top.js"></script>
+<script type="text/javascript" src="js/easing.js"></script> 
+<script type="text/javascript" src="js/nav-hover.js"></script>
+<link href='http://fonts.googleapis.com/css?family=Monda' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Doppio+One' rel='stylesheet' type='text/css'>
+<script type="text/javascript">
+  $(document).ready(function($){
+    $('#dc_mega-menu-orange').dcMegaMenu({rowItems:'4',speed:'fast',effect:'fade'});
+  });
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
+<script type="text/javascript" src="loader.js"></script> 
+
+
+<style>
+.no-js #loader { display: none;  }
+.js #loader { display: block; position: absolute; left: 100px; top: 0; }
+.se-pre-con {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+	background: url(loader.gif) center no-repeat #fff;
+}
+</style>
 
 </head>
 <body>
-    <div class="container_12">
-        <div class="grid_12 header-repeat">
-            <div id="branding">
-                <div class="floatleft logo">
-                    <img src="img/hhh.png" alt="Logo" />
-				</div>
-				<div class="floatleft middle">
-					<h1>My Shopping Cart</h1>
-				</div>
-                <div class="floatright">
-                    <div class="floatleft">
-                        <img src="img/img-profile.jpg" alt="Profile Pic" /></div>
+	<div class="se-pre-con"></div>
+  <div class="wrap">
+		<div class="header_top">
+			<div class="logo">
+				<a href="index.php"><img src="images/logoo.png" alt="" /></a>
+			</div>
+			  <div class="header_top_right">
+			    <!--<div class="search_box">
+				    <form>
+				    	<input type="text" value="Search for Products" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Search for Products';}"><input type="submit" value="SEARCH">
+				    </form>
+			    </div>-->
+			    <div class="shopping_cart">
+					<div class="cart">
+						<a href="#" title="View my shopping cart" rel="nofollow">
+								<span class="cart_title">Cart</span>
+								<span class="no_product">
+                               <?php
+                               $getData = $ct->checkCartTable();
+                               if($getData){
+                               	$sum = Session::get("sum");
+                                $qty = Session::get("qty");
+                                echo "₹".$sum." | Qty: ".$qty;
+                               }else {
+                               	echo "(Empty)";
+                               }
 
-                        <?php 
-                        if(isset($_GET['action'])&& $_GET['action']=="logout"){
-                            Session::destroy();
-                        }
-                        ?>
-                    <div class="floatleft marginleft10">
-                        <ul class="inline-ul floatleft">
-                            <li>Hello <?php echo Session::get('adminName');?></li>
-                            <li><a href="?action=logout">Logout</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="clear">
-                </div>
-            </div>
-        </div>
-        <div class="clear">
-        </div>
-        <div class="grid_12">
-            <ul class="nav main">
-                <li><a href="dashboard.php"><span>Dashboard</span></a></li>
-                <li><a href="inbox.php"><span>Inbox</span></a> </li>
-               
-				
-            </ul>
-        </div>
-        <div class="clear">
-        </div>
-    
+                               ?>
+								
+							</span>
+							</a>
+						</div>
+
+			      </div>
+
+<?php
+if(isset($_GET['cid'])){
+$delData = $ct->delCustomerCart();	
+Session::destroy();
+}
+?>
+
+		   <div class="login" title="click here to Sign In">
+  <?php 
+         $login = Session::get("cuslogin");
+          if ($login == false){ ?>
+	     <a href="login.php">Login</a>
+   <?php } else { ?>
+   	     <a  href="?cid=<?php Session::get('cmrId')?>" >Logout</a>
+  <?php   } ?>
+
+		   
+
+		   </div>
+		 <div class="clear"></div>
+	 </div>
+	 <div class="clear"></div>
+ </div>
+<div class="menu">
+	<ul id="dc_mega-menu-orange" class="dc_mm-orange">
+	  <li><a href="index.php">Home</a></li>
+	  <li><a href="products.php">Products</a> </li>
+	  <li><a href="topbrands.php">Top Brands</a></li>
+	  <?php 
+	    $chkCart = $ct->checkCartTable();
+	    if($chkCart){ ?>
+	    	<li><a href="cart.php">Cart</a></li>
+	    	<li><a href="payment.php">Payment</a></li>
+	    <?php }
+	    ?>
+
+	    <?php 
+	     $cmrId = Session::get("cmrId");
+	    $chkOrder = $ct->checkOrder($cmrId);
+	    if($chkOrder){ ?>
+	    <li><a href="orderdetails.php">Order</a></li>
+	    <?php }
+	    ?>
+	  
+	  <?php 
+	  $login = Session::get("cuslogin");
+	  if ($login == true) { ?>
+	  <li><a href="profile.php">Profile</a> </li>
+	<?php } ?>
+	  <li><a href="contact.php">Contact</a> </li>
+	  <div class="clear"></div>
+	</ul>
+</div>
